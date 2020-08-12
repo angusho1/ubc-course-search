@@ -105,3 +105,13 @@ function onClick1(e) {
     xhr.send();
 
 }
+
+
+caches.open('bg')
+    .then( cache => {
+        cache.add('bg.png')
+            .then( () => {
+                
+            });
+    });
+
