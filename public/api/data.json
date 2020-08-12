@@ -1,0 +1,68 @@
+[
+    { 
+        "dept" : "CPSC",
+        "title" : "Computer Science",
+        "courses" : 
+        [
+            { 
+                "course" : "317",
+                "title" : "Internet Computing",
+                "credits" : 3,
+                "prereqs" : [ "CPSC 213", "CPSC 221" ],
+                "coreqs" : [],
+                "activities" : [ "Lecture", "Tutorial" ],
+                "sections" : 
+                [
+                    { 
+                        "section" : "101",
+                        "activity" : "Lecture",
+                        "instructor" : [ "Wagner, Alan" ],
+                        "logistics" : 
+                        [
+                            {
+                                "days" : [ "Mon", "Wed", "Fri" ],
+                                "start" : "9:00",
+                                "end" : "10:00",
+                                "building" : 
+                                {
+                                    "name" : "West Mall Swing Space",
+                                    "address" : "2175 West Mall, Vancouver, BC"
+                                },
+                                "room" : "201"
+                            }
+                        ],
+                        "total_seats_rem" : 0,
+                        "current_reg" : 188,
+                        "general_seats_rem" : 0,
+                        "restricted_seats_rem": 0
+                    },
+
+                    { 
+                        "section" : "T1A",
+                        "activity" : "Tutorial",
+                        "instructor" : [ "" ],
+                        "logistics" : 
+                        [
+                            {
+                                "days" : [ "Tue" ],
+                                "start" : "15:30",
+                                "end" : "16:30",
+                                "building" : 
+                                {
+                                    "name" : "ICICS Building",
+                                    "address" : "2366 Main Mall, Vancouver, BC"
+                                },
+                                "room" : "110"
+                            }
+                        ],
+                        "total_seats_rem" : 0,
+                        "current_reg" : 40,
+                        "general_seats_rem" : 0,
+                        "restricted_seats_rem": 0
+                    }
+                    
+                ]
+            }
+        ]
+    }
+]

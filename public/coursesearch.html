@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Search</title>
+    <link rel="stylesheet" href="course-style.css">
+</head>
+<body>
+    <header>
+        <h1>UBC Course Search</h1>
+    </header>
+
+    
+    <section class="container">
+        <div style="display: inline-block; vertical-align:top;">
+            <form class="container-box">
+                <h2>Find a Course:</h2>
+                <div class="form-container">
+                    <div class="label-container">
+                        <label for="dept" class="form-label">Department</label>
+                        <input type="text" id="dept" placeholder="ex: CPSC">
+                    </div>
+
+                    <div class="label-container">
+                        <label for="course" class="form-label">Course Code</label>
+                        <input type="text" id="course" placeholder="ex: 210">
+                    </div>
+
+                    <div class="label-container">
+                        <label for="section" class="form-label">Section</label>
+                        <input type="text" id="section" placeholder="ex: 103">
+                    </div>
+                </div>
+
+                <input class="btn" id="search-btn" type="submit" value="Search">
+
+            </form>
+
+            <div class="container-box hidden" id="display-box"></div>
+
+        </div>
+
+        <div style="display: inline-block; vertical-align:top;">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th class="day-header"></th>
+                        <th class="day-header">Sun</th>
+                        <th class="day-header">Mon</th>
+                        <th class="day-header">Tue</th>
+                        <th class="day-header">Wed</th>
+                        <th class="day-header">Thu</th>
+                        <th class="day-header">Fri</th>
+                        <th class="day-header">Sat</th>
+                    </tr>
+                </thead>
+                <tbody id="timetable-body">
+                </tbody>
+            </table>
+        </div>
+
+
+    </section>
+
+
+    <!-- The Modal -->
+    <div id="map-box" class="pop-up">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="h3-style" style="margin-top: 25px"></span>
+            <span class="close-btn">&times;</span>
+            <div id="map"></div>
+            
+        </div>
+    </div>
+
+    <script src="coursesearch.js"></script>
+    <script src="search.js"></script>
+    <script src="map.js"></script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-0H9VLPVX4ngWyuhBY7UxhKX3s8dyCBc">
+    </script>
+    
+</body>
+</html>

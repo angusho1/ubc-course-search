@@ -1,0 +1,15 @@
+{
+  "name": "coursesearch",
+  "version": "1.0.0",
+  "description": "Course Search Program",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "Angus Ho",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
