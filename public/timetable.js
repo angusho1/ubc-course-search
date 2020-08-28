@@ -40,6 +40,30 @@ function growCell(e) {
         currRow.deleteCell(index);
         currRow = nextRow;
     }
+
+    cell.removeEventListener('click', growCell);
+    cell.addEventListener('click', shrinkCell);
+}
+
+function shrinkCell(e) {
+    var cell = e.target;
+
+    let span = 6;
+    
+    let index = cell.cellIndex;
+    let currRow = cell.parentElement.nextElementSibling;
+
+    for (let i = 1; i < span; i++) {
+        let nextRow = currRow.nextElementSibling;
+        currRow.insertCell(index);
+        currRow.children[index].addEventListener('click', growCell);
+        currRow = nextRow;
+    }
+
+    cell.rowSpan = 1;
+
+    cell.removeEventListener('click', shrinkCell);
+    cell.addEventListener('click', growCell);
 }
 
 function buildTimetable() {
@@ -102,7 +126,7 @@ function onClick1(e) {
         }
     }
 
-    xhr.send();
+    xhr.send(); 
 
 }
 

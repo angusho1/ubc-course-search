@@ -11,5 +11,10 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "es6-promise": "^4.2.8",
+    "isomorphic-fetch": "^2.2.1",
+    "jsdom": "^16.4.0"
   }
 }

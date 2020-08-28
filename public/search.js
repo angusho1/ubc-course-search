@@ -8,30 +8,60 @@ for (var i = 0; i<inputs.length; i++) {
     inputs[i].addEventListener('focus', hidePlaceHolder);
 }
 
-search.addEventListener('click', searchCourse);
+search.addEventListener('click', initSearch);
 
-function searchCourse(e) {
+function initSearch(e) {
     e.preventDefault();
 
-    if (invalidSubmission()) {
-        return;
-    }
+    const searchType = determineSearch();
+    if (searchType.invalid) return;
 
-    fetch('/api/data.json')
+    const deptVal = dept.value.toUpperCase().replace(/\s+/g, '');
+    const courseVal = course.value.toUpperCase().replace(/\s+/g, '');
+    const sectionVal = section.value.toUpperCase().replace(/\s+/g, '');
+    resetInputs();
+
+    searchFunc = searchType.searchFunc;
+    searchFunc(deptVal, courseVal, sectionVal);
+
+    // fetch('/api/data.json')
+    //     .then(res => res.json())
+    //     .then(displaySearchRes)
+    //     .catch(searchFailed);
+}
+
+function searchDept(deptVal, courseVal, sectionVal) {
+    fetch('departments.json')
         .then(res => res.json())
-        .then(displaySearchRes)
+        .then(data => {
+            for (let i = 0; i < data.departments.length; i++) {
+                let dept = data.departments[i];
+                if (dept.subjCode === deptVal) {
+                    displayDeptRes({
+                        "dept" : dept.subjCode,
+                        "title" : dept.title,
+                        "faculty" : dept.faculty,
+                        "courses" : dept.courses
+                    });
+                    return;
+                }
+            }
+            throw new err;
+        })
         .catch(searchFailed);
 }
 
-function searchFailed(err) {
-    let displayBox = document.getElementById('display-box');
-    displayBox.innerHTML = `<h3>Search Not Found</h3>`;
-    if (displayBox.classList.contains('hidden')) {
-        displayBox.classList.remove('hidden');
-    }
+
+function searchCourse(deptVal, courseVal, sectionVal) { // TOOO: implement
+    console.log("searching course");
 }
 
-function displaySearchRes(res) {
+function searchSection(deptVal, courseVal, sectionVal) { // TOOO: implement
+    console.log("searching section");
+}
+
+
+function displaySearchRes(res) { // TOOO: replace entirely
     const deptVal = dept.value.toUpperCase().replace(/\s+/g, '');
     const courseVal = course.value.toUpperCase().replace(/\s+/g, '');
     const sectionVal = section.value.toUpperCase().replace(/\s+/g, '');
@@ -45,7 +75,9 @@ function displaySearchRes(res) {
     }
 
     if (courseVal == '') {
-        displayDeptRes(dept_obj);
+        // displayDeptRes(dept_obj);
+        displayDeptResNew(deptVal);
+
     } else {
         let course_obj;
         for (c of dept_obj.courses) {
@@ -83,20 +115,23 @@ function resetInputs() {
     })
 }
 
+
 function displayDeptRes(dept_obj) {
     let displayBox = document.getElementById('display-box');
 
-    const courses = dept_obj.courses.map(course => `${dept_obj.dept} ${course.course}`);
+    // const courses = dept_obj.courses.map(course => `${course.courseCode} - ${course.courseTitle}`);
+    const courses = dept_obj.courses;
 
     courseStr = `<ul>`;
     courses.forEach(course =>  {
-        courseStr += `<li>${course}</li>`;
+        courseStr += `<li><b>${course.courseCode}</b> - ${course.courseTitle}</li>`;
     });
     courseStr += `</ul>`;
 
-
     displayBox.innerHTML = `<h3>${dept_obj.title} (${dept_obj.dept})</h3>
-    Courses: <b>${courseStr}</b>`;
+    ${dept_obj.faculty}
+    </br>
+    Courses: ${courseStr}`;
 
     unhideDisplay();
 }
@@ -201,8 +236,8 @@ function unhideDisplay() {
     }
 }
 
-function invalidSubmission() {
-    let val = false;
+function determineSearch() {
+    let val = { invalid: false, searchFunc: searchDept };
     let r1 = /^\s*[a-z]{2,4}\s*$/i;  // regex for dept code
     let r2 = /^\s*[a-z0-9]{3,4}\s*$/i; // regex for course and section code
     let re = /^\s*$/; // regex for blank field
@@ -217,31 +252,33 @@ function invalidSubmission() {
     if (!sectionEmpty) {
         if (courseEmpty || !courseValid) {
             markInput(course, false);
-            val = true;
+            val.invalid = true;
         } else {
             markInput(course, true);
         }
         if (deptEmpty || !deptValid) {
             markInput(dept, false);
-            val = true;
+            val.invalid = true;
         } else {
             markInput(dept, true);
         }
         markInput(section, sectionValid);
-        if (!sectionValid) val = true;
+        if (!sectionValid) val.invalid = true;
+        val.searchFunc = searchSection;
     } else if (!courseEmpty) {
         if (deptEmpty || !deptValid) {
             markInput(dept, false);
-            val = true;
+            val.invalid = true;
         } else {
             markInput(dept, true);
         }
         markInput(course, courseValid);
         markInput(section, true);
-        if (!courseValid) val = true;
+        if (!courseValid) val.invalid = true;
+        val.searchFunc = searchCourse;
     } else if (deptEmpty || !deptValid) {
         markInput(dept, false);
-        val = true;
+        val.invalid = true;
         markInput(course, true);
         markInput(section, true);
     } else {
@@ -250,6 +287,14 @@ function invalidSubmission() {
         markInput(section, true);
     }
     return val;
+}
+
+function searchFailed(err) {
+    let displayBox = document.getElementById('display-box');
+    displayBox.innerHTML = `<h3>Search Not Found</h3>`;
+    if (displayBox.classList.contains('hidden')) {
+        displayBox.classList.remove('hidden');
+    }
 }
 
 function buildlink() {

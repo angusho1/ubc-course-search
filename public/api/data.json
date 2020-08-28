@@ -2,6 +2,7 @@
     { 
         "dept" : "CPSC",
         "title" : "Computer Science",
+        "faculty" : "Faculty of Science",
         "courses" : 
         [
             { 

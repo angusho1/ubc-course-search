@@ -18,6 +18,7 @@ window.onclick = function(event) {
 
 function openMap() {
     modal.style.display = "inline-block";
+    // document.body.focus({preventScroll: true});
 }
 
 
