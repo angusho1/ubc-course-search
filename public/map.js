@@ -9,26 +9,20 @@ span.onclick = function() {
     modal.style.display = "none";
 }
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
+// Close the modal when
+window.onclick = event => {
     if (event.target == modal) {
         modal.style.display = "none";
     }
 }
 
+// Opens pop-up modal to display the map
 function openMap() {
     modal.style.display = "inline-block";
     // document.body.focus({preventScroll: true});
 }
 
-
-// let googleMap;
-// var vancouver = {lat: 49.246292, lng: -123.116226};
-// var options = {
-//     zoom: 12,
-//     center: vancouver
-// }
-
+// uses Google Maps API to load map of the building
 async function loadMap(address, name) {
     let boxTitle = document.querySelector('.modal-content').children[0];
     boxTitle.textContent = name;
@@ -57,6 +51,7 @@ async function loadMap(address, name) {
     addMarker(markerInfo, map);
 }
 
+// fetches location information from Google Places API, given an address
 function fetchLocationData(address) {
     const base = 'https://maps.googleapis.com/maps/api/geocode/json';
     const key = 'AIzaSyA-0H9VLPVX4ngWyuhBY7UxhKX3s8dyCBc';
@@ -65,6 +60,7 @@ function fetchLocationData(address) {
         .then(res => res.json());
 }
 
+// Adds a marker to the specified location on the map
 function addMarker(info, map) {
     var marker = new google.maps.Marker({
         position: info.coords,

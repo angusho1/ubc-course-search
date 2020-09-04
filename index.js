@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const server = http.createServer((req, res) => {
 
-    let filePath = path.join(__dirname, 'public', path.extname(req.url) != '' ? req.url : 'coursesearch.html');
+    let filePath = path.join(__dirname, 'public', path.extname(req.url) != '' ? req.url : 'index.html');
     let extname = path.extname(filePath);
     let contentType = 'text/html';
 

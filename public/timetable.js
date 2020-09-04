@@ -1,4 +1,4 @@
-buildTimetable();
+buildTimetable(9, 19); // init timetable from 9:00am - 7:00pm
 
 function changeCell(e) {
     e.preventDefault();
@@ -13,7 +13,6 @@ function changeCell(e) {
     let colors = ["", "red", "yellow", "blue", "green", "black", "purple", "orange", "indigo", "pink", "aqua", "brown"];
 
     cell.style.backgroundColor = colors[Math.floor(Math.random() * 11) + 1];
-
 
     // cell.addEventListener('contextmenu', function() {
     //     e.preventDefault();
@@ -66,12 +65,12 @@ function shrinkCell(e) {
     cell.addEventListener('click', growCell);
 }
 
-function buildTimetable() {
-    var tbody = document.querySelector('#timetable-body');
-    var start = 9;
-    var t = 0;
+// creates a timetable with the specified start and end time
+function buildTimetable(start, end) {
+    let tbody = document.querySelector('#timetable-body');
+    let t = 0;
 
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < (end - start) * 2; i++) {
         var row = tbody.insertRow();
         var cell = row.insertCell();
         if (i % 2 == 0) {
@@ -104,32 +103,6 @@ function buildTimetable() {
         cells[i].addEventListener('click', growCell);
     }
 }
-
-
-function addSection(e) {
-    e.target.blur();
-}
-
-function onClick1(e) {
-    e.preventDefault();
-
-    var xhr = new XMLHttpRequest();
-    
-    xhr.open('GET', '', true);
-
-    console.log(xhr);
-
-    xhr.onload = function() {
-        if (this.status == 200) {
-            // console.log(xhr);
-            console.log(this.responseText);
-        }
-    }
-
-    xhr.send(); 
-
-}
-
 
 caches.open('bg')
     .then( cache => {
