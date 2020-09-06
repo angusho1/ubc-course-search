@@ -7,6 +7,7 @@ const dept = document.getElementById('dept');
 const course = document.getElementById('course');
 const section = document.getElementById('section');
 let coursesData; // object containing all course data
+let buildingData;
 
 preFetchData();
 initSearchBox();
@@ -21,6 +22,13 @@ async function preFetchData() {
             coursesData = data;
             console.log(coursesData);
         });
+
+    await fetch('buildings.json')
+    .then(res => res.json())
+    .then(data => {
+        buildingData = data;
+        console.log(buildingData);
+    });
 }
 
 // Add placeholder listeners
@@ -38,122 +46,63 @@ function initSearch(e) {
     const searchType = determineSearch();
     if (searchType.invalid) return;
 
-    const deptVal = dept.value.toUpperCase().replace(/\s+/g, '');
-    const courseVal = course.value.toUpperCase().replace(/\s+/g, '');
-    const sectionVal = section.value.toUpperCase().replace(/\s+/g, '');
+    const deptKey = dept.value.toUpperCase().replace(/\s+/g, '');
+    const courseKey = course.value.toUpperCase().replace(/\s+/g, '');
+    const sectionKey = section.value.toUpperCase().replace(/\s+/g, '');
     resetInputs();
 
     searchFunc = searchType.searchFunc;
-    searchFunc(deptVal, courseVal, sectionVal)
-
-    // fetch('/api/data.json')
-    //     .then(res => res.json())
-    //     .then(displaySearchRes)
-    //     .catch(searchFailed);
+    searchFunc(deptKey, courseKey, sectionKey);
 }
 
 // searches course data object for department-specific information
-function searchDept(deptVal, courseVal, sectionVal) {
-    const deptObj = coursesData.departments[deptVal];
+function searchDept(deptKey, courseKey, sectionKey) {
+    const deptObj = coursesData.departments[deptKey];
     if (deptObj != null) {
         displayDeptRes(deptObj);
-    // if (deptObj != null) {
-    //     displayDeptRes({
-    //         "dept" : deptObj.subjCode,
-    //         "title" : deptObj.title,
-    //         "faculty" : deptObj.faculty,
-    //         "courses" : deptObj.courses
-    //     });
     } else {
-        searchFailed();
+        searchFailed('department', deptKey);
+        markInput(inputs[0], false);
     }
-    // for (deptObj of coursesData.departments) {
-    //     if (deptObj.subjCode === deptVal) {
-    //         displayDeptRes({
-    //             "dept" : deptObj.subjCode,
-    //             "title" : deptObj.title,
-    //             "faculty" : deptObj.faculty,
-    //             "courses" : deptObj.courses
-    //         });
-    //         return;
-    //     }
-    // }
-    // searchFailed();
 }
 
 // searches courseData object for course-specific information
-function searchCourse(deptVal, courseVal, sectionVal) {
-    for (deptObj of coursesData.departments) {
-        if (deptObj.subjCode === deptVal) {
-            for (courseObj of deptObj.courses) {
-                if (courseObj.courseCode === `${deptVal} ${courseVal}`) {
-                    displayCourseRes({
-                        "dept" : deptObj.subjCode,
-                        "title" : deptObj.title,
-                        "faculty" : deptObj.faculty
-                        // "courses" : deptObj.courses
-                    },
-                    {
-                        "title" : courseObj.courseTitle,
-                        "courseCode" : courseObj.courseCode,
-                        "credits" : courseObj.credits,
-                        "prereqs" : courseObj.prereqs,
-                        "sections" : courseObj.sections
-                    });
-                    return;
-                }
-            }
-            searchFailed();
-            return;
+function searchCourse(deptKey, courseKey, sectionKey) {
+    const deptObj = coursesData.departments[deptKey];
+    if (deptObj != null) {
+        const courseObj = deptObj.courses[courseKey];
+        if (courseObj != null) {
+            displayCourseRes(deptObj, courseObj);
+        } else {
+            searchFailed('course code', `${deptKey} ${courseKey}`);
+            markInput(inputs[1], false);
         }
+    } else {
+        searchFailed('department', deptKey);
+        markInput(inputs[0], false);
     }
-    searchFailed();
 }
 
 // searches courseData object for section-specific information
-function searchSection(deptVal, courseVal, sectionVal) {
-
-}
-
-
-function displaySearchRes(res) { // TOOO: replace entirely
-    const deptVal = dept.value.toUpperCase().replace(/\s+/g, '');
-    const courseVal = course.value.toUpperCase().replace(/\s+/g, '');
-    const sectionVal = section.value.toUpperCase().replace(/\s+/g, '');
-    resetInputs();
-    
-    let dept_obj;
-    for (d of res) {
-        if (d.dept == deptVal) {
-            dept_obj = d;
-        }
-    }
-
-    if (courseVal == '') {
-        // displayDeptRes(dept_obj);
-        displayDeptResNew(deptVal);
-
-    } else {
-        let course_obj;
-        for (c of dept_obj.courses) {
-            if (c.course == courseVal) {
-                course_obj = c;
+function searchSection(deptKey, courseKey, sectionKey) {
+    const deptObj = coursesData.departments[deptKey];
+    if (deptObj != null) {
+        const courseObj = deptObj.courses[courseKey];
+        if (courseObj != null) {
+            const sectionObj = courseObj.sections[sectionKey];
+            if (sectionObj != null) {
+                displaySectionRes(deptObj, courseObj, sectionObj);
+            } else {
+                searchFailed('section code', `${deptKey} ${courseKey} ${sectionKey}`)
+                markInput(inputs[2], false);
             }
-        }
-
-        if (sectionVal == '') {
-            displayCourseRes(dept_obj, course_obj);
         } else {
-            let instr;
-            let section_obj;
-            for (s of course_obj.sections) {
-                if (s.section == sectionVal) {
-                    section_obj = s;
-                    instr = section_obj.instructor[0]
-                }
-            }
-            displaySectionRes(dept_obj, course_obj, section_obj);
+            searchFailed('course code', `${deptKey} ${courseKey}`);
+            markInput(inputs[1], false);
         }
+    } else {
+        searchFailed('department', deptKey);
+        markInput(inputs[0], false);
     }
 }
 
@@ -193,11 +142,11 @@ function displayDeptRes(deptObj) {
 }
 
 // display search results from a course search
-function displayCourseRes(dept_obj, course_obj) {
+function displayCourseRes(deptObj, courseObj) {
     let displayBox = document.getElementById('display-box');
 
-    const prereqs = course_obj.prereqs;
-    const sections = course_obj.sections.map(section => section.sectionCode);
+    const prereqs = courseObj.prereqs;
+    const sections = Object.entries(courseObj.sections).map(sectionObj => sectionObj[1].sectionCode);
 
     let sectionStr = `<ul>`;
     sections.forEach(section =>  {
@@ -205,47 +154,70 @@ function displayCourseRes(dept_obj, course_obj) {
     });
     sectionStr += `</ul>`;
     
-    displayBox.innerHTML = `<h3>${dept_obj.dept} ${course_obj.courseCode.split(" ")[1]}</h3>
-    <b>${course_obj.title}</b>
+    displayBox.innerHTML = `<h3>${deptObj.subjCode} ${courseObj.courseCode.split(" ")[1]}</h3>
+    <b>${courseObj.courseTitle}</b>
     </br>
-    Credits: <b>${course_obj.credits}</b>
+    Credits: <b>${courseObj.credits}</b>
     </br>
     Pre-Reqs: <b>${prereqs}</b>
     </br>
     Sections: <b>${sectionStr}</b>`;
 
-    unhideDisplay();
-
+    unhideDisplay(); 
 }
 
 // display search results from a section search
-function displaySectionRes(dept_obj, course_obj, section_obj) {
+function displaySectionRes(deptObj, courseObj, sectionObj) {
 
     let displayBox = document.getElementById('display-box');
 
-    loadMap(section_obj.logistics[0].building.address, section_obj.logistics[0].building.name);
+    let classDivs = '';
+    sectionObj.classes.forEach(classObj => {
+        let dayString;
 
-    displayBox.innerHTML = `<h3>${dept_obj.dept} ${course_obj.course} ${section_obj.section} (${section_obj.activity})</h3>
-    <b>${course_obj.title}</b>
+        dayString = classObj.days.trim().split(' ').join(' / ');
+
+        let locationInfo = /\S/.test(classObj.location.building) && /\S/.test(classObj.location.room) ? 
+        `Building: <b>${classObj.location.building}</b>
+       </br>
+       Room: <b>${classObj.location.room}</b>` : '';
+
+        classDiv = document.createElement('div');
+        classDiv.classList = 'class-div';
+        classDiv.innerHTML = `
+        <b>${dayString}</b> <span style="float:right; font-style: italic">TERM ${classObj.term}</span>
+        </br>
+        Start: <b>${classObj.start}</b>
+        </br>
+        End: <b>${classObj.end}</b>
+        </br>
+        ${locationInfo}`;
+        // classDiv.appendChild(createMapBtn());
+        classDivs += classDiv.outerHTML;
+    })
+
+    displayBox.innerHTML = `<h3>${deptObj.subjCode} ${courseObj.course} ${sectionObj.section} (${sectionObj.activity})</h3>
+    <b>${courseObj.courseTitle}</b>
+    </br>`;
+
+    const instructors = sectionObj.instructors.length > 1 ? `Instructors: <ul style="padding-bottom: 10px"><li><b>${sectionObj.instructors.join('</b></li><li><b>')}</b></li></ul>` : `Instructor: <b>${sectionObj.instructors[0]}</b></br>`;
+
+    displayBox.innerHTML += `${instructors}
+    Credits: <b>${courseObj.credits}</b>
     </br>
-    Instructor: <b>${section_obj.instructor}</b>
-    </br>
-    Credits: <b>${course_obj.credits}</b>
-    </br>
-    Building: <b>${section_obj.logistics[0].building.name}</b>
-    </br>
-    Room: <b>${section_obj.logistics[0].room}</b>
-    </br>
-    Start: <b>${section_obj.logistics[0].start}</b>
-    </br>
-    End: <b>${section_obj.logistics[0].end}</b>
-    </br>
-    Total Seats Remaining: <b>${section_obj.total_seats_rem}</b>`;
+    ${classDivs}
+    Total Seats Remaining: <b>${sectionObj.totalSeatsRem}</b>`;
+
+    for (let i=0; i<sectionObj.classes.length; i++) {
+        const building = sectionObj.classes[i].location.building;
+        if (/\S/.test(building) && /\S/.test(sectionObj.classes[i].location.room)) {
+            const address = buildingData[building].address;
+            document.querySelectorAll('.class-div')[i].appendChild(createMapBtn(building, address, i));
+        }
+    }
 
     displayBox.appendChild(createAddSectionBtn());
-    displayBox.appendChild(createMapBtn());
     
-
     unhideDisplay();
 }
 
@@ -261,11 +233,15 @@ function createAddSectionBtn() {
 }
 
 // creates a button for opening a map of the current section
-function createMapBtn() {
+function createMapBtn(building, address, id) {
+    loadMap(building, address, id);
     let mapButton = document.createElement('button');
     mapButton.textContent = "Open Map";
-    mapButton.classList.add('btn', 'small-btn');
-    mapButton.addEventListener('click', openMap); // need to init
+    mapButton.classList.add('btn', 'small-btn', 'map-btn');
+    mapButton.id = `map-btn-${id}`;
+    mapButton.addEventListener('click', (e) => {
+        openMap(building, `map-${id}`);
+    });
     return mapButton;
 }
 
@@ -308,21 +284,21 @@ function determineSearch() {
     let r2 = /^\s*[a-z0-9]{3,4}\s*$/i; // regex for course and section code
     let re = /^\s*$/; // regex for blank field
 
-    let deptValid = r1.test(dept.value);
-    let courseValid = r2.test(course.value);
+    let deptKeyid = r1.test(dept.value);
+    let courseKeyid = r2.test(course.value);
     let sectionValid = r2.test(section.value);
     let deptEmpty = re.test(dept.value);
     let courseEmpty = re.test(course.value);
     let sectionEmpty = re.test(section.value);
 
     if (!sectionEmpty) {
-        if (courseEmpty || !courseValid) {
+        if (courseEmpty || !courseKeyid) {
             markInput(course, false);
             val.invalid = true;
         } else {
             markInput(course, true);
         }
-        if (deptEmpty || !deptValid) {
+        if (deptEmpty || !deptKeyid) {
             markInput(dept, false);
             val.invalid = true;
         } else {
@@ -332,17 +308,17 @@ function determineSearch() {
         if (!sectionValid) val.invalid = true;
         val.searchFunc = searchSection;
     } else if (!courseEmpty) {
-        if (deptEmpty || !deptValid) {
+        if (deptEmpty || !deptKeyid) {
             markInput(dept, false);
             val.invalid = true;
         } else {
             markInput(dept, true);
         }
-        markInput(course, courseValid);
+        markInput(course, courseKeyid);
         markInput(section, true);
-        if (!courseValid) val.invalid = true;
+        if (!courseKeyid) val.invalid = true;
         val.searchFunc = searchCourse;
-    } else if (deptEmpty || !deptValid) {
+    } else if (deptEmpty || !deptKeyid) {
         markInput(dept, false);
         val.invalid = true;
         markInput(course, true);
@@ -356,9 +332,10 @@ function determineSearch() {
 }
 
 // displays "Search Not Found" on the results display box
-function searchFailed(err) {
+function searchFailed(searchType, input) {
     let displayBox = document.getElementById('display-box');
-    displayBox.innerHTML = `<h3>Search Not Found</h3>`;
+    displayBox.innerHTML = `<h3>Search Not Found</h3>
+                            <h4 style="font-style: italic;">'${input}' is not a valid ${searchType}</h4>`;
     if (displayBox.classList.contains('hidden')) {
         displayBox.classList.remove('hidden');
     }

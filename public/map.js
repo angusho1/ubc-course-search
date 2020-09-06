@@ -7,26 +7,36 @@ var span = document.getElementsByClassName("close-btn")[0];
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
     modal.style.display = "none";
+    hideMap();
 }
 
 // Close the modal when
 window.onclick = event => {
     if (event.target == modal) {
         modal.style.display = "none";
+        hideMap();
     }
 }
 
 // Opens pop-up modal to display the map
-function openMap() {
+function openMap(building, mapId) {
+    let boxTitle = document.querySelector('.modal-content').children[0];
+    boxTitle.textContent = building;
+
+    const map = document.getElementById(mapId);
+    map.style.display = 'block';
     modal.style.display = "inline-block";
     // document.body.focus({preventScroll: true});
 }
 
-// uses Google Maps API to load map of the building
-async function loadMap(address, name) {
-    let boxTitle = document.querySelector('.modal-content').children[0];
-    boxTitle.textContent = name;
+function hideMap() {
+    document.querySelectorAll('.map').forEach(m => {
+        m.style.display = 'none';
+    });
+}
 
+// uses Google Maps API to load map of the building
+async function loadMap(building, address, id) {
     let lat;
     let lng;
     await fetchLocationData(address)
@@ -43,18 +53,27 @@ async function loadMap(address, name) {
 
     let markerInfo = {
         coords: coords,
-        content: `<h3>${name}</h3>${address}`
+        content: `<h3>${building}</h3>${address}`
     }
 
-    var map = new google.maps.Map(document.getElementById('map'), options);
+    const newMap = document.createElement('div');
+    const mapId = `map-${id}`;
+    newMap.id = mapId;
+    newMap.classList = 'map';
+
+    modal.firstElementChild.appendChild(newMap);
+
+    var map = new google.maps.Map(document.getElementById(mapId), options);
 
     addMarker(markerInfo, map);
+
+    newMap.style.display = 'none';
 }
 
-// fetches location information from Google Places API, given an address
+// fetches location information from Google Geocoding API, given an address
 function fetchLocationData(address) {
     const base = 'https://maps.googleapis.com/maps/api/geocode/json';
-    const key = 'AIzaSyA-0H9VLPVX4ngWyuhBY7UxhKX3s8dyCBc';
+    const key = config.GOOGLE_KEY;
     const url = `${base}?key=${key}&address="${address}"`;
     return fetch(url)
         .then(res => res.json());
