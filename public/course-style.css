@@ -49,8 +49,9 @@ h1 {
 }
 
 #display-box {
-    max-height: 400px;
+    max-height: 390px;
     overflow-y: scroll;
+
 }
 
 .small-btn {
@@ -60,7 +61,15 @@ h1 {
 }
 
 .hidden {
-    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+}
+
+.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: .2s;
 }
 
 label {
@@ -157,9 +166,9 @@ td {
     height: 30px;
 }
 
-#timetable tr td:nth-child(even), #timetable th tr .day-header:nth-child(even)  {
+/* #timetable tr td:nth-child(even), #timetable th tr .day-header:nth-child(even)  {
     background-color: #ffffffaa;
-}
+} */
 
 .time-cell-odd {
     font-size: 14px;
@@ -180,22 +189,22 @@ td {
 }
 
 .timetable-cell {
-
+    transition: .1s;
 }
 
 .added-cell {
     color: #0055B7;
     font-size: 15px;
-    background-color: #97D4E9 !important;
-    border: 2px solid #0055B7;
+    background-color: #97D4E966 !important;
     cursor: pointer;
-    transition: .2s;
+    line-height: 1em;
+    transition: background-color .2s, font-size .2s, color .2s;
 }
 
 
 .added-cell:hover {
-    background-color: #70afc4 !important;
-
+    background-image: linear-gradient(#97D4E922, #97D4E988);
+    outline: 2px solid #0055B7;
 }
 
 

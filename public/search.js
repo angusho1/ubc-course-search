@@ -1,6 +1,5 @@
 // Deals with all front end search functionality
 
-//  
 const searchBtn = document.getElementById('search-btn');
 const inputs = document.querySelectorAll('input[type=text]');
 const dept = document.getElementById('dept');
@@ -13,21 +12,26 @@ preFetchData();
 initSearchBox();
 searchBtn.addEventListener('click', initSearch);
 
+// Search objects that are currently on display
+let deptOnDisplay;
+let courseOnDisplay;
+let sectionOnDisplay;
 
-// calls back end for JSON file containing all course data
+
+// calls back end for JSON files containing all course and building data
 async function preFetchData() {
     await fetch('departments.json')
         .then(res => res.json())
         .then(data => {
             coursesData = data;
-            console.log(coursesData);
+            // console.log(coursesData);
         });
 
     await fetch('buildings.json')
     .then(res => res.json())
     .then(data => {
         buildingData = data;
-        console.log(buildingData);
+        // console.log(buildingData);
     });
 }
 
@@ -138,6 +142,10 @@ function displayDeptRes(deptObj) {
     </br>
     Courses: ${courseStr}`;
 
+    deptOnDisplay = deptObj;
+    courseOnDisplay = null;
+    sectionOnDisplay = null;
+
     unhideDisplay();
 }
 
@@ -163,6 +171,9 @@ function displayCourseRes(deptObj, courseObj) {
     </br>
     Sections: <b>${sectionStr}</b>`;
 
+    deptOnDisplay = deptObj;
+    courseOnDisplay = courseObj;
+    sectionOnDisplay = null;
     unhideDisplay(); 
 }
 
@@ -171,16 +182,17 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
 
     let displayBox = document.getElementById('display-box');
 
+    // create a div with the days, start and end times, location info, and term for each unique class
     let classDivs = '';
     sectionObj.classes.forEach(classObj => {
         let dayString;
 
-        dayString = classObj.days.trim().split(' ').join(' / ');
+        dayString = /\S/.test(classObj.days) ? classObj.days.trim().split(' ').join(' / ') : 'No Schedule';
 
         let locationInfo = /\S/.test(classObj.location.building) && /\S/.test(classObj.location.room) ? 
         `Building: <b>${classObj.location.building}</b>
-       </br>
-       Room: <b>${classObj.location.room}</b>` : '';
+        </br>
+        Room: <b>${classObj.location.room}</b>` : '';
 
         classDiv = document.createElement('div');
         classDiv.classList = 'class-div';
@@ -196,10 +208,12 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
         classDivs += classDiv.outerHTML;
     })
 
+    // display the general course and section info ()
     displayBox.innerHTML = `<h3>${deptObj.subjCode} ${courseObj.course} ${sectionObj.section} (${sectionObj.activity})</h3>
     <b>${courseObj.courseTitle}</b>
     </br>`;
 
+    // display the instructor(s)
     const instructors = sectionObj.instructors.length > 1 ? `Instructors: <ul style="padding-bottom: 10px"><li><b>${sectionObj.instructors.join('</b></li><li><b>')}</b></li></ul>` : `Instructor: <b>${sectionObj.instructors[0]}</b></br>`;
 
     displayBox.innerHTML += `${instructors}
@@ -208,6 +222,7 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
     ${classDivs}
     Total Seats Remaining: <b>${sectionObj.totalSeatsRem}</b>`;
 
+    // initializes a map adds an Open Map button for each unique class with a physical location
     for (let i=0; i<sectionObj.classes.length; i++) {
         const building = sectionObj.classes[i].location.building;
         if (/\S/.test(building) && /\S/.test(sectionObj.classes[i].location.room)) {
@@ -216,20 +231,33 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
         }
     }
 
-    displayBox.appendChild(createAddSectionBtn());
-    
-    unhideDisplay();
+    // creates an add/remove button for the section on display
+    if (sectionObj.classes.length > 0 && /\S/.test(sectionObj.classes[0].start) && /\S/.test(sectionObj.classes[0].end)) {
+        displayBox.appendChild(createSectionBtn(sectionObj));
+    }
+
+    // allows current section info to be accessed globally
+    deptOnDisplay = deptObj;
+    courseOnDisplay = courseObj;
+    sectionOnDisplay = sectionObj;
+
+    unhideDisplay(); // reveal display box if hidden
 }
 
+// creates a button for adding or removing a section to the timetable
+function createSectionBtn(sectionObj) {
+    let sectionButton = document.createElement('button');
+    sectionButton.classList.add('btn', 'small-btn');
+    sectionButton.id = 'section-button';
 
-// creates a button for adding a section to the timetable
-function createAddSectionBtn() {
-    let addButton = document.createElement('button');
-    addButton.textContent = "+ Add Section";
-    addButton.classList.add('btn', 'small-btn');
-    addButton.id = 'add-button';
-    addButton.addEventListener('click', addSection);
-    return addButton;
+    if (addedSections.includes(sectionObj.sectionCode)) {
+        sectionButton.textContent = '- Remove Section';
+        sectionButton.addEventListener('click', removeSection);
+    } else {
+        sectionButton.textContent = "+ Add Section";
+        sectionButton.addEventListener('click', addSection);
+    }
+    return sectionButton;
 }
 
 // creates a button for opening a map of the current section
@@ -245,34 +273,12 @@ function createMapBtn(building, address, id) {
     return mapButton;
 }
 
-
-// adds the searched section to the timetable
-function addSection(e) {
-    e.target.blur();
-
-    let addButton = document.getElementById('add-button');
-    addButton.textContent = '- Remove Section';
-
-    addButton.addEventListener('click', removeSection);
-
-    console.log("Section added");
-}
-
-// removes the selected section from the timetable
-function removeSection() {
-    console.log("Remove attempted");
-
-    let addButton = document.getElementById('add-button');
-    addButton.textContent = '+ Add Section';
-
-    addButton.removeEventListener('click', removeSection);
-}
-
 // unhides the search results box
 function unhideDisplay() {
     let displayBox = document.getElementById('display-box');
     if (displayBox.classList.contains('hidden')) {
         displayBox.classList.remove('hidden');
+        displayBox.classList.add('visible');
     }
 }
 
@@ -341,21 +347,6 @@ function searchFailed(searchType, input) {
     }
 }
 
-
-// function buildlink() { // Probably don't need this anymore
-//     let baseURL = "https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea";
-
-//     if (course === '') {
-//         baseURL += `&tname=subj-department&dept=${dept}`;
-//     } else if (section === '') {
-//         baseURL += `&tname=subj-course&dept=${dept}&course=${course}`;
-//     } else {
-//         baseURL += `&tname=subj-section&dept=${dept}&course=${course}&section=${section}`;
-//     }
-
-//     return baseURL;
-// }
-
 // marks an input box as either valid (green) or invalid (red)
 function markInput(input, valid) {
     if (valid) {
@@ -378,3 +369,17 @@ function hidePlaceHolder(e) {
         clickedInputBox.placeholder = placeholder;
     })
 }
+
+// function buildlink() { // Probably don't need this anymore
+//     let baseURL = "https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea";
+
+//     if (course === '') {
+//         baseURL += `&tname=subj-department&dept=${dept}`;
+//     } else if (section === '') {
+//         baseURL += `&tname=subj-course&dept=${dept}&course=${course}`;
+//     } else {
+//         baseURL += `&tname=subj-section&dept=${dept}&course=${course}&section=${section}`;
+//     }
+
+//     return baseURL;
+// }
