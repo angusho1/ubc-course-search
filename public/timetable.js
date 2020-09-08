@@ -2,11 +2,9 @@ let startTime = 9;
 let endTime = 19;
 const dayMap = {'Sun' : 0, 'Mon' : 1, 'Tue' : 2, 'Wed' : 3, 'Thu' : 4, 'Fri' : 5, 'Sat' : 6}; // maps day to corresponding column in timetable
 let matrix = new Array(7); // keeps track of the state of cells in timetable
+buildTimetable(startTime, endTime); // init timetable from 9:00am - 7:00pmBernath
 let addedSections = [];
 
-buildTimetable(startTime, endTime); // init timetable from 9:00am - 7:00pm
-
-console.log(addedSections);
 
 // creates a timetable with the specified start and end time
 function buildTimetable(start, end) {
@@ -42,11 +40,6 @@ function buildTimetable(start, end) {
             };
         }
     }
-    // let cells = document.querySelectorAll('.timetable-cell');
-    // for (let i = 0; i<cells.length; i++) {
-    //     cells[i].addEventListener('contextmenu', changeCell, false);
-    //     cells[i].addEventListener('click', growCell);
-    // }
 }
 
 function changeCell(e) {

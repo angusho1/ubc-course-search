@@ -31,7 +31,7 @@ async function preFetchData() {
     .then(res => res.json())
     .then(data => {
         buildingData = data;
-        // console.log(buildingData);
+        console.log(buildingData);
     });
 }
 
@@ -183,7 +183,7 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
     let displayBox = document.getElementById('display-box');
 
     // create a div with the days, start and end times, location info, and term for each unique class
-    let classDivs = '';
+    let classDivs = [];
     sectionObj.classes.forEach(classObj => {
         let dayString;
 
@@ -205,7 +205,7 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
         </br>
         ${locationInfo}`;
         // classDiv.appendChild(createMapBtn());
-        classDivs += classDiv.outerHTML;
+        classDivs.push(classDiv);
     })
 
     // display the general course and section info ()
@@ -214,13 +214,30 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
     </br>`;
 
     // display the instructor(s)
-    const instructors = sectionObj.instructors.length > 1 ? `Instructors: <ul style="padding-bottom: 10px"><li><b>${sectionObj.instructors.join('</b></li><li><b>')}</b></li></ul>` : `Instructor: <b>${sectionObj.instructors[0]}</b></br>`;
+    let instructors;
+    if (sectionObj.instructors.length > 1) {
+        instructors = 'Instructors: <ul style="padding-bottom: 10px">'
+        sectionObj.instructors.forEach( name => {
+            instructors += `<li><b>${convertName(name)}</b></li>`;
+        })
+        instructors += '</ul>';
+    } else {
+        instructors = `Instructor: <b>${convertName(sectionObj.instructors[0])}</b></br>`
+    }
+
+    // const instructors = sectionObj.instructors.length > 1 ? `Instructors: <ul style="padding-bottom: 10px"><li><b>${sectionObj.instructors.join('</b></li><li><b>')}</b></li></ul>` : `Instructor: <b>${convertName(sectionObj.instructors[0])}</b></br>`;
 
     displayBox.innerHTML += `${instructors}
     Credits: <b>${courseObj.credits}</b>
     </br>
-    ${classDivs}
     Total Seats Remaining: <b>${sectionObj.totalSeatsRem}</b>`;
+
+    // creates an add/remove button for the section on display
+    if (sectionObj.classes.length > 0 && /\S/.test(sectionObj.classes[0].start) && /\S/.test(sectionObj.classes[0].end)) {
+        displayBox.appendChild(createSectionBtn(sectionObj));
+    }
+
+    classDivs.forEach(classDiv => displayBox.appendChild(classDiv));
 
     // initializes a map adds an Open Map button for each unique class with a physical location
     for (let i=0; i<sectionObj.classes.length; i++) {
@@ -229,11 +246,6 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
             const address = buildingData[building].address;
             document.querySelectorAll('.class-div')[i].appendChild(createMapBtn(building, address, i));
         }
-    }
-
-    // creates an add/remove button for the section on display
-    if (sectionObj.classes.length > 0 && /\S/.test(sectionObj.classes[0].start) && /\S/.test(sectionObj.classes[0].end)) {
-        displayBox.appendChild(createSectionBtn(sectionObj));
     }
 
     // allows current section info to be accessed globally
@@ -368,6 +380,38 @@ function hidePlaceHolder(e) {
     clickedInputBox.addEventListener('blur', function() {
         clickedInputBox.placeholder = placeholder;
     })
+}
+
+// converts an instructor's name to regular casing
+function convertName(name) {
+    let arr = name.split(', ');
+    lastName = arr[0];
+    firstName = arr[1];
+
+    titleRegex = /\([A-Za-z]+\)/;
+    if (titleRegex.test(firstName)) {
+        const title = firstName.match(titleRegex);
+        firstName = firstName.replace(titleRegex, '')
+        firstName = lowerLetters(firstName);
+        lastName = lowerLetters(lastName);
+        lastName += ` ${title}`;
+    } else {
+        firstName = lowerLetters(firstName);
+        lastName = lowerLetters(lastName);
+    }
+
+    let result = `${firstName} ${lastName}`;
+    return result;
+}
+
+function lowerLetters(name) {
+    let arr = name.split(' ');
+    let converted = [];
+
+    arr.forEach(str => {
+        converted.push(str.charAt(0) + str.slice(1).toLowerCase());
+    });
+    return converted.join(' ');
 }
 
 // function buildlink() { // Probably don't need this anymore
