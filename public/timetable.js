@@ -2,13 +2,13 @@ let startTime = 9;
 let endTime = 19;
 const dayMap = {'Sun' : 0, 'Mon' : 1, 'Tue' : 2, 'Wed' : 3, 'Thu' : 4, 'Fri' : 5, 'Sat' : 6}; // maps day to corresponding column in timetable
 let matrix = new Array(7); // keeps track of the state of cells in timetable
-buildTimetable(startTime, endTime); // init timetable from 9:00am - 7:00pmBernath
+buildTimetable(startTime, endTime); // init timetable from 9:00am - 7:00pm
 let addedSections = [];
 
 
 // creates a timetable with the specified start and end time
 function buildTimetable(start, end) {
-    let tbody = document.querySelector('#timetable-body');
+    const tbody = document.getElementById('timetable-body');
     let t = 0;
     const rows = (end - start) * 2;
 
@@ -45,6 +45,74 @@ function buildTimetable(start, end) {
     }
 }
 
+
+// adds new rows to the timetable based on start and end times of the course
+// requires start and end to be natural numbers
+function addNewRows(start, end) {
+    const tbody = document.getElementById('timetable-body');
+
+    let rows;
+    let indexTime;
+    let startIndex;
+    if (start < startTime) {
+        rows = (startTime - start) * 2;
+        for (let i = 0; i < 7; i++) {
+            for (let j = 0; j < rows; j++) {
+                matrix[i].splice(j, 0, {});
+            }
+        }
+
+        startTime = start;
+        indexTime = start;
+        startIndex = 0;
+
+    } else if (end > endTime) {
+        rows = (end - endTime) * 2;
+        for (let i = 0; i < 7; i++) {
+            for (let j = 0; j < rows; j++) {
+                matrix[i].push({});
+            }
+        }
+
+        startIndex = (endTime - startTime) * 2;
+        indexTime = endTime;
+        endTime = end;
+    
+    } else {
+        console.log('no need to add new time');
+        return;
+    }
+
+    t = 0;
+    for (let r = startIndex; r < rows + startIndex; r++) { // r = index to start adding rows at
+        let newRow = tbody.insertRow(r);
+        let timeCell = newRow.insertCell();
+        if (r % 2 == 0) {
+            timeCell.classList.add('time-cell');
+            timeCell.textContent = `${(indexTime+t)}:00`;
+        } else {
+            timeCell.classList.add('time-cell');
+            timeCell.textContent = `${(indexTime+t)}:30`;
+            t++;
+        }
+
+        for (let j = 0; j < 7; j++) {
+            let c = newRow.insertCell();
+            c.classList.add('timetable-cell');
+            if (j % 2 == 0) {
+                c.classList.add('white-cell');
+            }
+            matrix[j][r] = {
+                "cell" : c,
+                "occupied" : false,
+                "replaced" : false,
+                "rowSpan" : 1
+            };
+        }
+    }
+
+}
+
 function changeCell(e) {
     e.preventDefault();
     let cell = e.target;
@@ -56,10 +124,12 @@ function changeCell(e) {
 
 
 // modifies the cell at matrix[column][row] to include course info, expands it to appropriate hour length, and deletes replaced cells
-function fillCell(column, row, sectionObj, classLength) {
+function fillCell(column, row, deptObj, courseObj, sectionObj, classLength) {
     const cellObj = matrix[column][row];
     const cell = cellObj.cell;
     cellObj.occupied = true;
+    cellObj['deptObj'] = deptObj;
+    cellObj['courseObj'] = courseObj;
     cellObj['sectionObj'] = sectionObj;
     cellObj.rowSpan = classLength;
 
@@ -93,7 +163,7 @@ function fillCell(column, row, sectionObj, classLength) {
     cell.textContent = `${sectionObj.sectionCode} (${sectionObj.activity})`;
     cell.classList = 'added-cell';
 
-    return cell;
+    return cellObj;
 }
 
 // returns the cell at matrix[column][row] to its original state, and restores cells that have been replaced
@@ -109,6 +179,8 @@ function removeCell(column, row) {
     cell.classList = 'timetable-cell';
     if (column % 2 == 0) cell.classList.add('white-cell');
     cellObj.occupied = false;
+    cellObj.deptObj = null;
+    cellObj.courseObj = null;
     cellObj.sectionObj = null;
 
     // adds cells that were replaced by the current cell when the section was added
@@ -131,7 +203,6 @@ function removeCell(column, row) {
             if (column % 2 == 0) cellToAddObj.cell.classList.add('white-cell');
             cellToAddObj.occupied = false;
             cellToAddObj.replaced = false;
-            cellToAddObj.sectionObj = null;
 
         } else {
             console.log('nothing to remove');
@@ -158,12 +229,14 @@ function addSection(e) {
         const classLength = (end - start) * 2;
         const days = classObj.days.trim().split(' ');
 
+        if (start < startTime || end > endTime) addNewRows(start, end);
+
         days.forEach(day => {
             let column = dayMap[day];
             let row = (start - startTime) * 2;
-            let cell = fillCell(column, row, sectionObj, classLength);
-            cell.addEventListener('click', e => {
-                displaySectionRes(deptObj, courseObj, sectionObj);
+            let cellObj = fillCell(column, row, deptObj, courseObj, sectionObj, classLength);
+            cellObj.cell.addEventListener('click', e => {
+                displaySectionRes(cellObj.deptObj, cellObj.courseObj, cellObj.sectionObj);
             });
         });
     }
@@ -230,4 +303,5 @@ caches.open('bg')
                 
             });
     });
+
 

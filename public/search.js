@@ -182,6 +182,11 @@ function displayCourseRes(deptObj, courseObj) {
 // display search results from a section search
 function displaySectionRes(deptObj, courseObj, sectionObj) {
 
+    if (deptObj == {}) {
+        console.log('nothing to show');
+        return;
+    }
+
     let displayBox = document.getElementById('display-box');
 
     // create a div with the days, start and end times, location info, and term for each unique class
