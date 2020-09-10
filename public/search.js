@@ -386,7 +386,7 @@ function hidePlaceHolder(e) {
 
 // converts an instructor's name to regular casing
 function convertName(name) {
-    if (name = 'TBA') return name;
+    if (name == 'TBA') return name;
     let arr = name.split(', ');
     lastName = arr[0];
     firstName = arr[1];
