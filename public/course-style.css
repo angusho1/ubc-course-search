@@ -14,26 +14,28 @@ body {
 
 header {
     background: #002145;
-    padding: 1rem;
+    padding: 3vw;
     border-top: 3px solid white;
-    padding-left: 5vw;
+    width: 100%;
+    text-align: center;
 }
 
 h1 {
     color: white;
-    /* font-style: italic; */
     text-transform: uppercase;
-    letter-spacing: 6pt;
+    letter-spacing: 4pt;
     font-weight: 600;
-    font-size: 22px;
+    font-size: 16px;
+}
+
+h2 {
+    font-size: 18px;
 }
 
 .container {
-    margin: auto;
-    width: auto;
-    overflow: auto;
-    min-width: 20vw;
-    padding: 3rem;
+    display: grid;
+    grid-gap: 2vw;
+    padding: 3vw;
     /* border: 2px solid red; */
 }
 
@@ -42,21 +44,41 @@ ul {
     padding-left: 0px;
 }
 
+.search-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-gap: 2vw;
+    align-items: start;
+}
+
 .container-box {
     /* border: 2px solid red; */
-    padding: 1.5vw;
+    padding: 4vw;
     margin-right: 2vw;
     margin-bottom: 1.5vw;
     background: #ffffff88;
     border-radius: 10px;
-    /* float: left; */
-    width: 25vw;
+    width: 100%;
+}
+
+.form-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-gap: 10px;
+}
+
+.label-container {
+
+}
+
+.form-label {
+    font-size: 15px;
+    width: 100%;
 }
 
 #display-box {
     max-height: 390px;
     overflow-y: scroll;
-
 }
 
 .small-btn {
@@ -77,9 +99,6 @@ ul {
     transition: .2s;
 }
 
-label {
-    display: block;
-}
 
 input[type='text'] {
     width: 100%;
@@ -132,25 +151,12 @@ input[type='text']:focus {
     border: none;
 }
 
-.form-container {
-    display: table;
-    border-spacing: 5px;
-}
-
-.label-container {
-    display: table-cell;
-}
-
-.form-label {
-    font-size: 15px;
-}
-
 #timetable {
     /* border: 2px solid red; */
     background-color: #f4f4f4aa;
-    /* float:right; */
     border-collapse: collapse;
     table-layout: fixed;
+    width: 100%;
     empty-cells: show;
 }
 
@@ -166,36 +172,34 @@ tr {
 td {
     border: 1px solid #ccc;
     text-align: center;
-    width: 125px;
+}
+
+.timetable-cell {
     overflow: hidden;
     height: 30px;
+    transition: .1s;
+}
+
+.white-cell {
+    background-color: #ffffffaa;
 }
 
 /* #timetable tr td:nth-child(even), #timetable th tr .day-header:nth-child(even)  {
     background-color: #ffffffaa;
 } */
 
-.time-cell-odd {
+.time-column {
+    width: 50px;
+}
+
+.time-cell {
     font-size: 14px;
     color: #666;
     text-align: right;
     padding-right: 5px;
     top: 0;
-    width: 50px;
 }
 
-.time-cell-even {
-    font-size: 14px;
-    color: #666;
-    text-align: right;
-    padding-right: 5px;
-    top: 0;
-    width: 50px;
-}
-
-.timetable-cell {
-    transition: .1s;
-}
 
 .added-cell {
     color: #0055B7;
@@ -211,7 +215,6 @@ td {
     background-image: linear-gradient(#97D4E922, #97D4E988);
     outline: 2px solid #0055B7;
 }
-
 
 
 /* The Modal (background) */
@@ -278,4 +281,85 @@ td {
 
 .class-div:hover {
     background-image: linear-gradient(#97D4E922, #97D4E988);
+}
+
+
+@media screen and (min-width: 576px) {
+    header {
+        padding: 2vw;
+        text-align: left;
+        padding-left: 5vw;
+    }
+
+    h1 {
+        font-size: 20px;
+        letter-spacing: 6pt;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .search-wrapper {
+        grid-template-columns: minmax(200px, 1fr) minmax(250px, 2fr);
+    }
+
+    .container-box {
+        padding: 2.5vw;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    header {
+        padding: 1.5vw;
+        text-align: left;
+        padding-left: 5vw;
+    }
+
+    .container {
+        padding: 2vw;
+        /* border: 2px solid red; */
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    .container-box {
+        padding: 2vw;
+    }
+}
+
+
+@media screen and (min-width: 992px) {
+    header {
+        padding: 1vw;
+        padding-left: 5vw;
+    }
+
+    .container {
+        grid-template-columns: 1fr 3fr;
+        justify-items: center;
+    }
+
+    .search-wrapper {
+        display: inline-block;
+    }
+
+    .container-box {
+        padding: 1.5vw;
+    }
+
+    .form-container {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    }
+}
+
+
+@media (min-width: 1200px) {
+
 }

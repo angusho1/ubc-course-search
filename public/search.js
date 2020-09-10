@@ -24,15 +24,17 @@ async function preFetchData() {
         .then(res => res.json())
         .then(data => {
             coursesData = data;
-            // console.log(coursesData);
+            console.log(coursesData);
         });
 
     await fetch('buildings.json')
     .then(res => res.json())
     .then(data => {
         buildingData = data;
-        console.log(buildingData);
+        // console.log(buildingData);
     });
+
+    // sunOrSat();
 }
 
 // Add placeholder listeners
@@ -219,7 +221,7 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
         instructors = 'Instructors: <ul style="padding-bottom: 10px">'
         sectionObj.instructors.forEach( name => {
             instructors += `<li><b>${convertName(name)}</b></li>`;
-        })
+        });
         instructors += '</ul>';
     } else {
         instructors = `Instructor: <b>${convertName(sectionObj.instructors[0])}</b></br>`
@@ -384,6 +386,7 @@ function hidePlaceHolder(e) {
 
 // converts an instructor's name to regular casing
 function convertName(name) {
+    if (name = 'TBA') return name;
     let arr = name.split(', ');
     lastName = arr[0];
     firstName = arr[1];
@@ -427,3 +430,20 @@ function lowerLetters(name) {
 
 //     return baseURL;
 // }
+
+function sunOrSat() {
+    for (deptKey in coursesData.departments) {
+        const deptObj = coursesData.departments[deptKey];
+        for (courseKey in deptObj.courses) {
+            const courseObj = deptObj.courses[courseKey];
+            for (sectionKey in courseObj.sections) {
+                const sectionObj = courseObj.sections[sectionKey];
+                for (classObj of sectionObj.classes) {
+                    if (/Sat/.test(classObj.days) || /Sun/.test(classObj.days)) {
+                        console.log(sectionObj.sectionCode);
+                    }
+                }
+            }
+        }
+    }
+}

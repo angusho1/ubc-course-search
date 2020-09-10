@@ -21,10 +21,10 @@ function buildTimetable(start, end) {
         let row = tbody.insertRow();
         let timeCell = row.insertCell();
         if (i % 2 == 0) {
-            timeCell.classList.add('time-cell-odd');
+            timeCell.classList.add('time-cell');
             timeCell.textContent = `${(start+t)}:00`;
         } else {
-            timeCell.classList.add('time-cell-even');
+            timeCell.classList.add('time-cell');
             timeCell.textContent = `${(start+t)}:30`;
             t++;
         }
@@ -32,6 +32,9 @@ function buildTimetable(start, end) {
         for (let j = 0; j < 7; j++) {
             let c = row.insertCell();
             c.classList.add('timetable-cell');
+            if (j % 2 == 0) {
+                c.classList.add('white-cell');
+            }
             matrix[j][i] = {
                 "cell" : c,
                 "occupied" : false,
@@ -98,12 +101,13 @@ function removeCell(column, row) {
     const cellObj = matrix[column][row];
     const cell = cellObj.cell;
 
-    console.log(`Column ${column}, Row ${row}`);
+    // console.log(`Column ${column}, Row ${row}`);
     
     cell.rowSpan = 1;
     cell.textContent = '';
     cell.classList.remove('added-cell');
     cell.classList = 'timetable-cell';
+    if (column % 2 == 0) cell.classList.add('white-cell');
     cellObj.occupied = false;
     cellObj.sectionObj = null;
 
@@ -124,6 +128,7 @@ function removeCell(column, row) {
             // updates the corresponding cell in the matrix
             cellToAddObj.cell = currRow.children[index];
             cellToAddObj.cell.classList = 'timetable-cell';
+            if (column % 2 == 0) cellToAddObj.cell.classList.add('white-cell');
             cellToAddObj.occupied = false;
             cellToAddObj.replaced = false;
             cellToAddObj.sectionObj = null;
@@ -159,7 +164,7 @@ function addSection(e) {
             let cell = fillCell(column, row, sectionObj, classLength);
             cell.addEventListener('click', e => {
                 displaySectionRes(deptObj, courseObj, sectionObj);
-            })
+            });
         });
     }
 
@@ -193,7 +198,7 @@ function removeSection(e) {
     sectionButton.addEventListener('click', addSection);
     sectionButton.textContent = '+ Add Section';
 
-    console.log(addedSections);
+    // console.log(addedSections);
 }
 
 // TODO
