@@ -28,14 +28,6 @@ const server = http.createServer((req, res) => {
         break;
     }
 
-    if (req.url == "/config.js") {
-        const configContent = `const config = {
-            GEOCODING_KEY = ${process.env.GEOCODING_KEY},
-            MAPS_KEY = ${process.env.MAPS_KEY}
-        }`;
-        fs.writeFileSync('config.js', configContent);
-    }
-
     fs.readFile(filePath, (err, data) => {
         if (err) {
             if (err.code == "ENOENT") {
