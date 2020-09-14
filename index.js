@@ -1,6 +1,8 @@
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const { EDESTADDRREQ } = require('constants');
+const { createInflate } = require('zlib');
 
 const server = http.createServer((req, res) => {
 
@@ -24,6 +26,14 @@ const server = http.createServer((req, res) => {
         case ".jpg":
         contentType = "image/jpg";
         break;
+    }
+
+    if (req.url == "/config.js") {
+        const configContent = `const config = {
+            GEOCODING_KEY = ${process.env.GEOCODING_KEY},
+            MAPS_KEY = ${process.env.MAPS_KEY}
+        }`;
+        fs.writeFileSync('config.js', configContent);
     }
 
     fs.readFile(filePath, (err, data) => {
