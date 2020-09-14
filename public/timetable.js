@@ -1,5 +1,5 @@
 let startTime = 9;
-let endTime = 19;
+let endTime = 18;
 const dayMap = {'Sun' : 0, 'Mon' : 1, 'Tue' : 2, 'Wed' : 3, 'Thu' : 4, 'Fri' : 5, 'Sat' : 6}; // maps day to corresponding column in timetable
 let matrix = new Array(7); // keeps track of the state of cells in timetable
 buildTimetable(startTime, endTime); // init timetable from 9:00am - 7:00pm

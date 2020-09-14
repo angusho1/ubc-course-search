@@ -1,3 +1,5 @@
+loadMapsScript();
+
 // Get the modal
 var modal = document.getElementById("map-box");
 
@@ -18,9 +20,18 @@ window.onclick = event => {
     }
 }
 
+
+function loadMapsScript() {
+    // Make Google Maps API Call
+    let maps_script = document.createElement('script');
+    maps_script.setAttribute('src', `https://maps.googleapis.com/maps/api/js?key=${config.MAPS_KEY}`);
+    maps_script.defer = true;
+    document.body.appendChild(maps_script);
+}
+
 // Opens pop-up modal to display the map
 function openMap(building, mapId) {
-    let boxTitle = document.querySelector('.modal-content').children[0];
+    let boxTitle = document.getElementById('building-name');
     boxTitle.textContent = building;
 
     const map = document.getElementById(mapId);
@@ -61,7 +72,8 @@ async function loadMap(building, address, id) {
     newMap.id = mapId;
     newMap.classList = 'map';
 
-    modal.firstElementChild.appendChild(newMap);
+    // modal.firstElementChild.appendChild(newMap);
+    document.getElementById('map-container').appendChild(newMap);
 
     var map = new google.maps.Map(document.getElementById(mapId), options);
 
@@ -73,7 +85,7 @@ async function loadMap(building, address, id) {
 // fetches location information from Google Geocoding API, given an address
 function fetchLocationData(address) {
     const base = 'https://maps.googleapis.com/maps/api/geocode/json';
-    const key = config.GOOGLE_KEY;
+    const key = config.GEOCODING_KEY;
     const url = `${base}?key=${key}&address="${address}"`;
     return fetch(url)
         .then(res => res.json());

@@ -133,6 +133,7 @@ input[type='text']:focus {
     transition: .5s;
     border: 0;
     border-radius: 5px;
+    -webkit-appearance: none;
 }
 
 #search-btn {
@@ -193,13 +194,13 @@ td {
 }
 
 .time-cell {
+    width: 50px;
     font-size: 14px;
     color: #666;
     text-align: right;
     padding-right: 5px;
     top: 0;
 }
-
 
 .added-cell {
     color: #0055B7;
@@ -215,6 +216,25 @@ td {
     background-image: linear-gradient(#97D4E922, #97D4E988);
     outline: 2px solid #0055B7;
 }
+
+.h3-style {
+    font-size: 20px;
+    color: #002145;
+    font-weight: bold;
+}
+
+.class-div {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: inherit;
+    background-color: #97D4E966;
+}
+
+.class-div:hover {
+    background-image: linear-gradient(#97D4E922, #97D4E988);
+}
+
+
 
 
 /* The Modal (background) */
@@ -234,22 +254,33 @@ td {
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto; /* 15% from the top and centered */
-    padding: 0 15px 15px 15px;
+    display: flex; /*added*/
+    flex-direction: column;
+    /* vertical-align: middle; */
+    padding: 2vw;
     border: 1px solid #888;
-    width: 70vw;
-    height: 35vw;
+    border-radius: 5px;
+    width: 90%;
+    height: 80%;
+
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    margin-top: -40%; /* Negative half of height. */
+    margin-left: -45%; /* Negative half of width. */
+}
+
+#modal-content-top {
+    /* display: block; */
 }
   
   /* The Close Button */
 .close-btn {
     color: #aaa;
     float: right;
-    top: 0;
+    line-height: 1em;
     font-size: 28px;
     font-weight: bold;
-    padding: 0;
-    margin: 0;
 }
   
 .close-btn:hover,
@@ -259,28 +290,16 @@ td {
     cursor: pointer;
 }
 
+#map-container {
+    width: 100%;
+    height: 100%;
+}
+
 .map {
     width: 100%;
-    height: 90%;
+    height: 100%;
     overflow-y: hidden;
     border-radius: 10px;
-}
-
-.h3-style {
-    font-size: 20px;
-    color: #002145;
-    font-weight: bold;
-}
-
-.class-div {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: inherit;
-    background-color: #97D4E966;
-}
-
-.class-div:hover {
-    background-image: linear-gradient(#97D4E922, #97D4E988);
 }
 
 
@@ -306,6 +325,10 @@ td {
 
     .container-box {
         padding: 2.5vw;
+    }
+
+    .modal-content {
+        padding: 1.5vw;
     }
 }
 
@@ -356,6 +379,10 @@ td {
 
     .form-container {
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    }
+
+    .modal-content {
+        padding: 1vw;
     }
 }
 

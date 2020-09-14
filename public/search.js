@@ -228,8 +228,10 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
             instructors += `<li><b>${convertName(name)}</b></li>`;
         });
         instructors += '</ul>';
-    } else {
+    } else if (sectionObj.instructors.length > 0) {
         instructors = `Instructor: <b>${convertName(sectionObj.instructors[0])}</b></br>`
+    } else {
+        instructors = '';
     }
 
     // const instructors = sectionObj.instructors.length > 1 ? `Instructors: <ul style="padding-bottom: 10px"><li><b>${sectionObj.instructors.join('</b></li><li><b>')}</b></li></ul>` : `Instructor: <b>${convertName(sectionObj.instructors[0])}</b></br>`;
