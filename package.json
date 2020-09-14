@@ -4,8 +4,8 @@
   "description": "Course Search Program",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node setConfig && node index",
+    "dev": "nodemon setConfig && nodemon index"
   },
   "author": "Angus Ho",
   "license": "ISC",
