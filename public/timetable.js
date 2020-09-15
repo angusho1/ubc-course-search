@@ -15,7 +15,7 @@ function buildTimetable(start, end) {
     for (let i = 0; i < 7; i++) {
         matrix[i] = Array(rows);
     }
-    console.log(matrix);
+    // console.log(matrix);
 
     for (let i = 0; i < rows; i++) {
         let row = tbody.insertRow();

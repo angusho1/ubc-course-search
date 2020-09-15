@@ -263,11 +263,11 @@ td {
     width: 90%;
     height: 80%;
 
-    position: fixed;
-    top: 60%;
-    left: 50%;
-    margin-top: -40%; /* Negative half of height. */
-    margin-left: -45%; /* Negative half of width. */
+    /* position: fixed; */
+    /* top: 60%; */
+    /* left: 50%; */
+    /* margin-top: -40%; Negative half of height. */
+    /* margin-left: -45%; Negative half of width. */
 }
 
 #modal-content-top {

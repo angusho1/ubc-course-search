@@ -20,14 +20,14 @@ let sectionOnDisplay;
 
 // calls back end for JSON files containing all course and building data
 async function preFetchData() {
-    await fetch('departments.json')
+    await fetch('/courseData.json')
         .then(res => res.json())
         .then(data => {
             coursesData = data;
-            console.log(coursesData);
+            // console.log(coursesData);
         });
 
-    await fetch('buildings.json')
+    await fetch('/buildings.json')
     .then(res => res.json())
     .then(data => {
         buildingData = data;

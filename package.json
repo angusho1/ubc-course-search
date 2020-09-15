@@ -2,10 +2,10 @@
   "name": "coursesearch",
   "version": "1.0.0",
   "description": "Course Search Program",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "node setConfig && node index",
-    "dev": "nodemon setConfig && nodemon index"
+    "dev": "nodemon index"
   },
   "author": "Angus Ho",
   "license": "ISC",
