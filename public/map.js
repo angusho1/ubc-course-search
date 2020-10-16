@@ -7,18 +7,18 @@ var modal = document.getElementById("map-box");
 var span = document.getElementsByClassName("close-btn")[0];
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
+span.addEventListener('click', () => {
     modal.style.display = "none";
     hideMap();
-}
+});
 
 // Close the modal when
-window.onclick = event => {
-    if (event.target == modal) {
+window.addEventListener('click', (e) => {
+    if (e.target == modal) {
         modal.style.display = "none";
         hideMap();
     }
-}
+});
 
 
 function loadMapsScript() {
@@ -90,6 +90,7 @@ function fetchLocationData(address) {
     return fetch(url)
         .then(res => res.json());
 }
+
 
 // Adds a marker to the specified location on the map
 function addMarker(info, map) {

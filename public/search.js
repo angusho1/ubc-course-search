@@ -1,3 +1,5 @@
+
+
 // Deals with all front end search functionality
 
 const searchBtn = document.getElementById('search-btn');
@@ -7,6 +9,9 @@ const course = document.getElementById('course');
 const section = document.getElementById('section');
 let coursesData; // object containing all course data
 let buildingData;
+
+const timetable = new Timetable(9, 18);
+console.log(timetable);
 
 preFetchData();
 initSearchBox();
@@ -213,7 +218,7 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
         ${locationInfo}`;
         // classDiv.appendChild(createMapBtn());
         classDivs.push(classDiv);
-    })
+    });
 
     // display the general course and section info ()
     displayBox.innerHTML = `<h3>${deptObj.subjCode} ${courseObj.course} ${sectionObj.section} (${sectionObj.activity})</h3>
@@ -265,18 +270,40 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
     unhideDisplay(); // reveal display box if hidden
 }
 
+// adds a section to the timetable
+function addSectionListener(e) {
+    const sectionButton = e.target;
+    sectionButton.blur();
+
+    timetable.addSection(deptOnDisplay, courseOnDisplay, sectionOnDisplay);
+
+    sectionButton.removeEventListener('click', addSectionListener);
+    sectionButton.addEventListener('click', removeSectionListener);
+    sectionButton.textContent = '- Remove Section';
+}
+
+function removeSectionListener(e) {
+    const sectionButton = e.target;
+
+    timetable.removeSection(sectionOnDisplay);
+
+    sectionButton.removeEventListener('click', removeSectionListener);
+    sectionButton.addEventListener('click', addSectionListener);
+    sectionButton.textContent = '+ Add Section';
+}
+
 // creates a button for adding or removing a section to the timetable
 function createSectionBtn(sectionObj) {
     let sectionButton = document.createElement('button');
     sectionButton.classList.add('btn', 'small-btn');
     sectionButton.id = 'section-button';
 
-    if (addedSections.includes(sectionObj.sectionCode)) {
+    if (timetable.addedSections.includes(sectionObj.sectionCode)) {
         sectionButton.textContent = '- Remove Section';
-        sectionButton.addEventListener('click', removeSection);
+        sectionButton.addEventListener('click', removeSectionListener);
     } else {
         sectionButton.textContent = "+ Add Section";
-        sectionButton.addEventListener('click', addSection);
+        sectionButton.addEventListener('click', addSectionListener);
     }
     return sectionButton;
 }
@@ -454,3 +481,11 @@ function sunOrSat() {
         }
     }
 }
+
+caches.open('bg')
+    .then( cache => {
+        cache.add('bg.png')
+            .then( () => {
+                
+            });
+    });
