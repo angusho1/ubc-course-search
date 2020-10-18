@@ -1,7 +1,7 @@
 {
-  "name": "coursesearch",
+  "name": "ubc-timetable",
   "version": "1.0.0",
-  "description": "Course Search Program",
+  "description": "UBC Timetable Web App",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/setConfig && node src/index",

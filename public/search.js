@@ -1,6 +1,6 @@
-
-
-// Deals with all front end search functionality
+/**
+ * Handles all front end search functionality
+*/
 
 const searchBtn = document.getElementById('search-btn');
 const inputs = document.querySelectorAll('input[type=text]');
@@ -22,35 +22,37 @@ let deptOnDisplay;
 let courseOnDisplay;
 let sectionOnDisplay;
 
-
-// calls back end for JSON files containing all course and building data
+/** 
+ * calls back end for JSON files containing all course and building data 
+*/
 async function preFetchData() {
     await fetch('/courseData.json')
         .then(res => res.json())
         .then(data => {
             coursesData = data;
-            // console.log(coursesData);
         });
 
     await fetch('/buildings.json')
-    .then(res => res.json())
-    .then(data => {
-        buildingData = data;
-        // console.log(buildingData);
-    });
-
-    // sunOrSat();
+        .then(res => res.json())
+        .then(data => {
+            buildingData = data;
+        });
 }
 
-// Add placeholder listeners
+/** 
+ * Add placeholder listeners
+*/
 function initSearchBox() {
     for (var i = 0; i<inputs.length; i++) {
         inputs[i].addEventListener('focus', hidePlaceHolder);
     }
 }
 
-// Called when search is entered
-// Determines search type (department, course, or section), and calls the appropriate function to display results
+/** 
+ * Called when search is entered
+ * Determines search type (department, course, or section), and calls the appropriate function
+ * to display results
+*/
 function initSearch(e) {
     e.preventDefault();
 
@@ -66,7 +68,9 @@ function initSearch(e) {
     searchFunc(deptKey, courseKey, sectionKey);
 }
 
-// searches course data object for department-specific information
+/** 
+ * Searches course data object for department-specific information
+*/
 function searchDept(deptKey, courseKey, sectionKey) {
     const deptObj = coursesData.departments[deptKey];
     if (deptObj != null) {
@@ -77,7 +81,9 @@ function searchDept(deptKey, courseKey, sectionKey) {
     }
 }
 
-// searches courseData object for course-specific information
+/** 
+ * Searches course data object for course-specific information
+*/
 function searchCourse(deptKey, courseKey, sectionKey) {
     const deptObj = coursesData.departments[deptKey];
     if (deptObj != null) {
@@ -94,7 +100,9 @@ function searchCourse(deptKey, courseKey, sectionKey) {
     }
 }
 
-// searches courseData object for section-specific information
+/** 
+ * Searches course data object for section-specific information
+*/
 function searchSection(deptKey, courseKey, sectionKey) {
     const deptObj = coursesData.departments[deptKey];
     if (deptObj != null) {
@@ -117,7 +125,9 @@ function searchSection(deptKey, courseKey, sectionKey) {
     }
 }
 
-// allow inputs to be reset after search has been initiated
+/** 
+ * Allow inputs to be reset after search has been initiated
+*/
 function resetInputs() {
     inputs.forEach(input => {
         if (!(/^\s*$/.test(input.value))) {
@@ -131,7 +141,9 @@ function resetInputs() {
     })
 }
 
-// display search results from a department search
+/** 
+ * Display search results from a department search
+*/
 function displayDeptRes(deptObj) {
     let displayBox = document.getElementById('display-box');
 
@@ -156,7 +168,9 @@ function displayDeptRes(deptObj) {
     unhideDisplay();
 }
 
-// display search results from a course search
+/** 
+ * display search results from a course search
+*/
 function displayCourseRes(deptObj, courseObj) {
     let displayBox = document.getElementById('display-box');
 
@@ -184,7 +198,9 @@ function displayCourseRes(deptObj, courseObj) {
     unhideDisplay(); 
 }
 
-// display search results from a section search
+/** 
+ * display search results from a section search
+*/
 function displaySectionRes(deptObj, courseObj, sectionObj) {
 
     if (deptObj == {}) {
@@ -270,7 +286,9 @@ function displaySectionRes(deptObj, courseObj, sectionObj) {
     unhideDisplay(); // reveal display box if hidden
 }
 
-// adds a section to the timetable
+/** 
+ * Callback for when user wants to add a section to the timetable
+*/
 function addSectionListener(e) {
     const sectionButton = e.target;
     sectionButton.blur();
@@ -292,7 +310,9 @@ function removeSectionListener(e) {
     sectionButton.textContent = '+ Add Section';
 }
 
-// creates a button for adding or removing a section to the timetable
+/** 
+ * Creates a button for adding or removing a section to the timetable
+*/
 function createSectionBtn(sectionObj) {
     let sectionButton = document.createElement('button');
     sectionButton.classList.add('btn', 'small-btn');
@@ -308,7 +328,9 @@ function createSectionBtn(sectionObj) {
     return sectionButton;
 }
 
-// creates a button for opening a map of the current section
+/** 
+ * Creates a button for opening a map of the current section
+*/
 function createMapBtn(building, address, id) {
     loadMap(building, address, id);
     let mapButton = document.createElement('button');
@@ -321,7 +343,9 @@ function createMapBtn(building, address, id) {
     return mapButton;
 }
 
-// unhides the search results box
+/** 
+ * Unhides the search results box
+*/
 function unhideDisplay() {
     let displayBox = document.getElementById('display-box');
     if (displayBox.classList.contains('hidden')) {
@@ -330,8 +354,12 @@ function unhideDisplay() {
     }
 }
 
-// determines if the search is syntactically valid, and determines the type of search initiated (department, course, or section)
-// Marks valid and invalid inputs depending on the type of search
+/** 
+ * Determines if the search is syntactically valid, and determines the type of search initiated
+ * (department, course, or section)
+ * 
+ * Marks valid and invalid inputs depending on the type of search
+*/
 function determineSearch() {
     let val = { invalid: false, searchFunc: searchDept };
     let r1 = /^\s*[a-z]{2,4}\s*$/i;  // regex for dept code
@@ -385,7 +413,9 @@ function determineSearch() {
     return val;
 }
 
-// displays "Search Not Found" on the results display box
+/** 
+ * Displays "Search Not Found" on the results display box
+*/
 function searchFailed(searchType, input) {
     let displayBox = document.getElementById('display-box');
     displayBox.innerHTML = `<h3>Search Not Found</h3>
@@ -395,7 +425,9 @@ function searchFailed(searchType, input) {
     }
 }
 
-// marks an input box as either valid (green) or invalid (red)
+/** 
+ * Marks an input box as either valid (green) or invalid (red)
+*/
 function markInput(input, valid) {
     if (valid) {
         if (input.classList.contains('error-border')) {
@@ -408,7 +440,9 @@ function markInput(input, valid) {
     }
 }
 
-// removes the placeholder from an input box
+/** 
+ * Removes the placeholder from an input box
+*/
 function hidePlaceHolder(e) {
     var clickedInputBox = e.target;
     var placeholder = clickedInputBox.placeholder;
@@ -418,7 +452,11 @@ function hidePlaceHolder(e) {
     })
 }
 
-// converts an instructor's name to regular casing
+/** 
+ * Converts an instructor's name to regular casing
+ * 
+ * @returns {string}  the converted name
+*/
 function convertName(name) {
     if (name == 'TBA') return name;
     let arr = name.split(', ');
@@ -451,20 +489,6 @@ function lowerLetters(name) {
     return converted.join(' ');
 }
 
-// function buildlink() { // Probably don't need this anymore
-//     let baseURL = "https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea";
-
-//     if (course === '') {
-//         baseURL += `&tname=subj-department&dept=${dept}`;
-//     } else if (section === '') {
-//         baseURL += `&tname=subj-course&dept=${dept}&course=${course}`;
-//     } else {
-//         baseURL += `&tname=subj-section&dept=${dept}&course=${course}&section=${section}`;
-//     }
-
-//     return baseURL;
-// }
-
 function sunOrSat() {
     for (deptKey in coursesData.departments) {
         const deptObj = coursesData.departments[deptKey];
@@ -481,11 +505,3 @@ function sunOrSat() {
         }
     }
 }
-
-caches.open('bg')
-    .then( cache => {
-        cache.add('bg.png')
-            .then( () => {
-                
-            });
-    });

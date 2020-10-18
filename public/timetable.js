@@ -2,7 +2,8 @@
  * Provides functionality for creating interactive timetables
 */
 
-const dayMap = {'Sun' : 0, 'Mon' : 1, 'Tue' : 2, 'Wed' : 3, 'Thu' : 4, 'Fri' : 5, 'Sat' : 6}; // maps day to corresponding column in timetable
+// maps day to corresponding column in timetable
+const DAY_MAP = {'Sun' : 0, 'Mon' : 1, 'Tue' : 2, 'Wed' : 3, 'Thu' : 4, 'Fri' : 5, 'Sat' : 6};
 
 class Timetable {
     matrix = new Array(7); // keeps track of the state of cells in timetable
@@ -129,7 +130,7 @@ class Timetable {
 
 
      /**
-      * adds the searched section to the timetable and returns true if the section is successfully added
+      * adds the given section to the timetable
       * 
       * @param {event} e 
       * 
@@ -147,7 +148,7 @@ class Timetable {
             if (start < this.startTime || end > this.endTime) addNewRows(start, end);
     
             days.forEach(day => {
-                let column = dayMap[day];
+                let column = DAY_MAP[day];
                 let row = (start - this.startTime) * 2;
                 let cellObj = this.fillCell(column, row, deptObj, courseObj, sectionObj, classLength);
                 cellObj.cell.addEventListener('click', e => {
@@ -172,7 +173,7 @@ class Timetable {
             const days = classObj.days.trim().split(' ');
     
             days.forEach(day => {
-                let column = dayMap[day];
+                let column = DAY_MAP[day];
                 let row = (start - this.startTime) * 2;
                 this.removeCell(column, row);
             });
