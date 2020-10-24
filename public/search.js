@@ -4,32 +4,26 @@
 
 const searchBtn = document.getElementById('search-btn');
 const inputs = document.querySelectorAll('input[type=text]');
-const dept = document.getElementById('dept');
-const course = document.getElementById('course');
-const section = document.getElementById('section');
-let coursesData; // object containing all course data
+const deptInput = document.getElementById('dept-input');
+const courseInput = document.getElementById('course-input');
+const sectionInput = document.getElementById('section-input');
+let coursesData;
 let buildingData;
-
-const timetable = new Timetable(9, 18);
-console.log(timetable);
 
 preFetchData();
 initSearchBox();
-searchBtn.addEventListener('click', initSearch);
 
-// Search objects that are currently on display
-let deptOnDisplay;
-let courseOnDisplay;
-let sectionOnDisplay;
+
 
 /** 
- * calls back end for JSON files containing all course and building data 
+ * Calls back end for JSON files containing all course and building data 
 */
 async function preFetchData() {
     await fetch('/courseData.json')
         .then(res => res.json())
         .then(data => {
             coursesData = data;
+            console.log(data);
         });
 
     await fetch('/buildings.json')
@@ -46,6 +40,7 @@ function initSearchBox() {
     for (var i = 0; i<inputs.length; i++) {
         inputs[i].addEventListener('focus', hidePlaceHolder);
     }
+    searchBtn.addEventListener('click', initSearch);
 }
 
 /** 
@@ -59,13 +54,29 @@ function initSearch(e) {
     const searchType = determineSearch();
     if (searchType.invalid) return;
 
-    const deptKey = dept.value.toUpperCase().replace(/\s+/g, '');
-    const courseKey = course.value.toUpperCase().replace(/\s+/g, '');
-    const sectionKey = section.value.toUpperCase().replace(/\s+/g, '');
+    const deptKey = deptInput.value.toUpperCase().replace(/\s+/g, '');
+    const courseKey = courseInput.value.toUpperCase().replace(/\s+/g, '');
+    const sectionKey = sectionInput.value.toUpperCase().replace(/\s+/g, '');
     resetInputs();
 
     searchFunc = searchType.searchFunc;
     searchFunc(deptKey, courseKey, sectionKey);
+}
+
+/** 
+ * Allow inputs to be reset after search has been initiated
+*/
+function resetInputs() {
+    inputs.forEach(input => {
+        if (!(/^\s*$/.test(input.value))) {
+            input.classList.add('searched-input');
+            input.addEventListener('focus', (e) => {
+                e.target.value = '';
+                e.target.classList.remove('searched-input');
+            })
+        }
+        input.blur();
+    })
 }
 
 /** 
@@ -123,22 +134,6 @@ function searchSection(deptKey, courseKey, sectionKey) {
         searchFailed('department', deptKey);
         markInput(inputs[0], false);
     }
-}
-
-/** 
- * Allow inputs to be reset after search has been initiated
-*/
-function resetInputs() {
-    inputs.forEach(input => {
-        if (!(/^\s*$/.test(input.value))) {
-            input.classList.add('searched-input');
-            input.addEventListener('focus', (e) => {
-                e.target.value = '';
-                e.target.classList.remove('searched-input');
-            })
-        }
-        input.blur();
-    })
 }
 
 /** 
@@ -293,7 +288,7 @@ function addSectionListener(e) {
     const sectionButton = e.target;
     sectionButton.blur();
 
-    timetable.addSection(deptOnDisplay, courseOnDisplay, sectionOnDisplay);
+    timetable1.addSection(deptOnDisplay, courseOnDisplay, sectionOnDisplay);
 
     sectionButton.removeEventListener('click', addSectionListener);
     sectionButton.addEventListener('click', removeSectionListener);
@@ -303,7 +298,7 @@ function addSectionListener(e) {
 function removeSectionListener(e) {
     const sectionButton = e.target;
 
-    timetable.removeSection(sectionOnDisplay);
+    timetable1.removeSection(sectionOnDisplay);
 
     sectionButton.removeEventListener('click', removeSectionListener);
     sectionButton.addEventListener('click', addSectionListener);
@@ -318,7 +313,7 @@ function createSectionBtn(sectionObj) {
     sectionButton.classList.add('btn', 'small-btn');
     sectionButton.id = 'section-button';
 
-    if (timetable.addedSections.includes(sectionObj.sectionCode)) {
+    if (timetable1.addedSections.includes(sectionObj.sectionCode)) {
         sectionButton.textContent = '- Remove Section';
         sectionButton.addEventListener('click', removeSectionListener);
     } else {
@@ -366,49 +361,49 @@ function determineSearch() {
     let r2 = /^\s*[a-z0-9]{3,4}\s*$/i; // regex for course and section code
     let re = /^\s*$/; // regex for blank field
 
-    let deptKeyid = r1.test(dept.value);
-    let courseKeyid = r2.test(course.value);
-    let sectionValid = r2.test(section.value);
-    let deptEmpty = re.test(dept.value);
-    let courseEmpty = re.test(course.value);
-    let sectionEmpty = re.test(section.value);
+    let deptKeyid = r1.test(deptInput.value);
+    let courseKeyid = r2.test(courseInput.value);
+    let sectionValid = r2.test(sectionInput.value);
+    let deptEmpty = re.test(deptInput.value);
+    let courseEmpty = re.test(courseInput.value);
+    let sectionEmpty = re.test(sectionInput.value);
 
     if (!sectionEmpty) {
         if (courseEmpty || !courseKeyid) {
-            markInput(course, false);
+            markInput(courseInput, false);
             val.invalid = true;
         } else {
-            markInput(course, true);
+            markInput(courseInput, true);
         }
         if (deptEmpty || !deptKeyid) {
-            markInput(dept, false);
+            markInput(deptInput, false);
             val.invalid = true;
         } else {
-            markInput(dept, true);
+            markInput(deptInput, true);
         }
-        markInput(section, sectionValid);
+        markInput(sectionInput, sectionValid);
         if (!sectionValid) val.invalid = true;
         val.searchFunc = searchSection;
     } else if (!courseEmpty) {
         if (deptEmpty || !deptKeyid) {
-            markInput(dept, false);
+            markInput(deptInput, false);
             val.invalid = true;
         } else {
-            markInput(dept, true);
+            markInput(deptInput, true);
         }
-        markInput(course, courseKeyid);
-        markInput(section, true);
+        markInput(courseInput, courseKeyid);
+        markInput(sectionInput, true);
         if (!courseKeyid) val.invalid = true;
         val.searchFunc = searchCourse;
     } else if (deptEmpty || !deptKeyid) {
-        markInput(dept, false);
+        markInput(deptInput, false);
         val.invalid = true;
-        markInput(course, true);
-        markInput(section, true);
+        markInput(courseInput, true);
+        markInput(sectionInput, true);
     } else {
-        markInput(dept, true);
-        markInput(course, true);
-        markInput(section, true);
+        markInput(deptInput, true);
+        markInput(courseInput, true);
+        markInput(sectionInput, true);
     }
     return val;
 }
@@ -484,24 +479,14 @@ function lowerLetters(name) {
     let converted = [];
 
     arr.forEach(str => {
-        converted.push(str.charAt(0) + str.slice(1).toLowerCase());
+        if (/-/.test(str)) {
+            let dashedName = str.split('-');
+            str = dashedName[0].charAt(0) + dashedName[0].slice(1).toLowerCase() + '-' +
+            dashedName[1].charAt(0) + dashedName[1].slice(1).toLowerCase();
+            converted.push(str);
+        } else {
+            converted.push(str.charAt(0) + str.slice(1).toLowerCase());
+        }
     });
     return converted.join(' ');
-}
-
-function sunOrSat() {
-    for (deptKey in coursesData.departments) {
-        const deptObj = coursesData.departments[deptKey];
-        for (courseKey in deptObj.courses) {
-            const courseObj = deptObj.courses[courseKey];
-            for (sectionKey in courseObj.sections) {
-                const sectionObj = courseObj.sections[sectionKey];
-                for (classObj of sectionObj.classes) {
-                    if (/Sat/.test(classObj.days) || /Sun/.test(classObj.days)) {
-                        console.log(sectionObj.sectionCode);
-                    }
-                }
-            }
-        }
-    }
 }

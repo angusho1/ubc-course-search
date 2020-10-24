@@ -18,17 +18,17 @@
                 <div class="form-container">
                     <div class="label-container">
                         <label for="dept" class="form-label">Department</label>
-                        <input type="text" id="dept" placeholder="ex: CPSC">
+                        <input type="text" id="dept-input" placeholder="ex: CPSC">
                     </div>
 
                     <div class="label-container">
                         <label for="course" class="form-label">Course</label>
-                        <input type="text" id="course" placeholder="ex: 210">
+                        <input type="text" id="course-input" placeholder="ex: 210">
                     </div>
 
                     <div class="label-container">
                         <label for="section" class="form-label">Section</label>
-                        <input type="text" id="section" placeholder="ex: 103">
+                        <input type="text" id="section-input" placeholder="ex: 103">
                     </div>
                 </div>
 
@@ -40,8 +40,12 @@
 
         </div>
 
-        <div style="display: inline-block; vertical-align:top;">
-            <table id="timetable">
+        <div id="timetable-wrapper" style="display: inline-block; vertical-align:top;">
+            <div class="container-box">
+                <span class="timetable-menu" id="term-1">Term 1</span>
+                <span class="timetable-menu" id="term-2">Term 2</span>
+            </div>
+            <!-- <table id="timetable">
                 <thead>
                     <col width="50px" class="time-column"/>
                     <tr>
@@ -57,7 +61,7 @@
                 </thead>
                 <tbody id="timetable-body">
                 </tbody>
-            </table>
+            </table> -->
         </div>
     </div>
 
@@ -81,5 +85,6 @@
     <script src="timetable.js"></script>
     <script src="search.js"></script>
     <script src="map.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

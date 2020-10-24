@@ -10,69 +10,116 @@ class Timetable {
     addedSections = [];
 
     /**
-     * Creates a timetable with the specified start and end time
+     * Creates a timetable with the specified start, end time, and academic term
      * 
      * @param {number} start  The default start time of the timetable
      * @param {number} end  The default end time of the timetable
+     * @param {string} term  The academic term of the timetable
      */
-    constructor(start, end) {
+    constructor(start, end, term) {
         this.startTime = start;
         this.endTime = end;
+        this.term = term;
+        this.table = this.createTableElement(term);
+        this.initTable(this.table);
 
-        const tbody = document.getElementById('timetable-body');
-        let t = 0;
-        const rows = (end - start) * 2;
+        const numRows = (end - start) * 2;
     
         for (let i = 0; i < 7; i++) {
-            this.matrix[i] = Array(rows);
+            this.matrix[i] = Array(numRows);
         }
-    
-        for (let i = 0; i < rows; i++) {
-            let row = tbody.insertRow();
-            let timeCell = row.insertCell();
-            if (i % 2 == 0) {
-                timeCell.classList.add('time-cell');
-                timeCell.textContent = `${(start+t)}:00`;
-            } else {
-                timeCell.classList.add('time-cell');
-                timeCell.textContent = `${(start+t)}:30`;
-                t++;
+
+        const startIndex = 0;
+        this.addRows(startIndex, numRows, start);
+    }
+
+    createTableElement(term) {
+        let table = document.createElement('table');
+        table.className = 'timetable';
+        table.id = `timetable-${term}`;
+        document.getElementById('timetable-wrapper').appendChild(table);
+        return table;
+    }
+
+    initTable(table) {
+        let thead = document.createElement('thead');
+        table.appendChild(thead);
+
+        let tr = document.createElement('tr');
+        thead.appendChild(tr);
+        tr.innerHTML += '<th width="50px" class="day-header"></th>';
+        for (let day of Object.keys(DAY_MAP)) {
+            tr.innerHTML += `<th class="day-header">${day}</th>`;
+        }
+
+        let tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+    }
+
+    /**
+     * Fills the current row with 7 cells and adds them to the matrix
+     * 
+     * @param {HTMLTableRowElement} row  The current row to fill
+     * @param {number} i  The index of the row in the table
+     */
+    fillRowCells(row, i) {
+        for (let j = 0; j < 7; j++) {
+            let c = row.insertCell();
+            c.classList.add('timetable-cell');
+            if (j % 2 == 0) {
+                c.classList.add('white-cell');
             }
-    
-            for (let j = 0; j < 7; j++) {
-                let c = row.insertCell();
-                c.classList.add('timetable-cell');
-                if (j % 2 == 0) {
-                    c.classList.add('white-cell');
-                }
-                this.matrix[j][i] = {
-                    "cell" : c,
-                    "occupied" : false,
-                    "replaced" : false,
-                    "rowSpan" : 1
-                };
-            }
+            this.matrix[j][i] = {
+                "cell": c,
+                "occupied": false,
+                "replaced": false,
+                "rowSpan": 1
+            };
         }
     }
 
     /**
-     * Adds new rows to the timetable based on start and end times of the course
+     * Adds the given number of rows to the timetable at the given indices
+     * 
+     * @param {number} startIndex  The index in the table to begin adding rows at
+     * @param {number} numRows  The number of rows to add to the table
+     * @param {number} startTime  The time of day to begin at
+     */
+    addRows(startIndex, numRows, startTime) {
+        let t = 0;
+        let tbody = this.table.childNodes[1];
+        for (let i = startIndex; i < numRows + startIndex; i++) {
+            let row = tbody.insertRow(i);
+            let timeCell = row.insertCell();
+            if (i % 2 == 0) {
+                timeCell.classList.add('time-cell');
+                timeCell.textContent = `${(startTime + t)}:00`;
+            } else {
+                timeCell.classList.add('time-cell');
+                timeCell.textContent = `${(startTime + t)}:30`;
+                t++;
+            }
+            this.fillRowCells(row, i);
+        }
+    }
+
+    /**
+     * Appends new rows to the timetable if the start or end time is outside of the timetable's current time range
      * 
      * @param {number} start 
      * @param {number} end
      * 
      * @requires start and end are natural numbers
      */
-    addNewRows(start, end) {
-        const tbody = document.getElementById('timetable-body');
-
-        let rows;
-        let indexTime;
+    appendRows(start, end) {
+        const tbody = this.table.getElementsByTagName('tbody')[0];
         let startIndex;
+        let numRows;
+        let indexTime;
         if (start < this.startTime) {
-            rows = (startTime - start) * 2;
+            numRows = (this.startTime - start) * 2;
             for (let i = 0; i < 7; i++) {
-                for (let j = 0; j < rows; j++) {
+                for (let j = 0; j < numRows; j++) {
                     this.matrix[i].splice(j, 0, {});
                 }
             }
@@ -82,9 +129,9 @@ class Timetable {
             startIndex = 0;
     
         } else if (end > this.endTime) {
-            rows = (end - this.endTime) * 2;
+            numRows = (end - this.endTime) * 2;
             for (let i = 0; i < 7; i++) {
-                for (let j = 0; j < rows; j++) {
+                for (let j = 0; j < numRows; j++) {
                     this.matrix[i].push({});
                 }
             }
@@ -97,35 +144,8 @@ class Timetable {
             console.log('No need to add new time');
             return;
         }
-    
-        t = 0;
 
-        for (let r = startIndex; r < rows + startIndex; r++) { // r = index to start adding rows at
-            let newRow = tbody.insertRow(r);
-            let timeCell = newRow.insertCell();
-            if (r % 2 == 0) {
-                timeCell.classList.add('time-cell');
-                timeCell.textContent = `${(indexTime+t)}:00`;
-            } else {
-                timeCell.classList.add('time-cell');
-                timeCell.textContent = `${(indexTime+t)}:30`;
-                t++;
-            }
-    
-            for (let j = 0; j < 7; j++) {
-                let c = newRow.insertCell();
-                c.classList.add('timetable-cell');
-                if (j % 2 == 0) {
-                    c.classList.add('white-cell');
-                }
-                this.matrix[j][r] = {
-                    "cell" : c,
-                    "occupied" : false,
-                    "replaced" : false,
-                    "rowSpan" : 1
-                };
-            }
-        }
+        this.addRows(startIndex, numRows, indexTime);
     }
 
 
@@ -145,7 +165,7 @@ class Timetable {
             const classLength = (end - start) * 2;
             const days = classObj.days.trim().split(' ');
     
-            if (start < this.startTime || end > this.endTime) addNewRows(start, end);
+            if (start < this.startTime || end > this.endTime) this.appendRows(start, end);
     
             days.forEach(day => {
                 let column = DAY_MAP[day];
