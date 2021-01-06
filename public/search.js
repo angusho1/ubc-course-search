@@ -361,21 +361,21 @@ function determineSearch() {
     let r2 = /^\s*[a-z0-9]{3,4}\s*$/i; // regex for course and section code
     let re = /^\s*$/; // regex for blank field
 
-    let deptKeyid = r1.test(deptInput.value);
-    let courseKeyid = r2.test(courseInput.value);
+    let deptValid = r1.test(deptInput.value);
+    let courseValid = r2.test(courseInput.value);
     let sectionValid = r2.test(sectionInput.value);
     let deptEmpty = re.test(deptInput.value);
     let courseEmpty = re.test(courseInput.value);
     let sectionEmpty = re.test(sectionInput.value);
 
     if (!sectionEmpty) {
-        if (courseEmpty || !courseKeyid) {
+        if (courseEmpty || !courseValid) {
             markInput(courseInput, false);
             val.invalid = true;
         } else {
             markInput(courseInput, true);
         }
-        if (deptEmpty || !deptKeyid) {
+        if (deptEmpty || !deptValid) {
             markInput(deptInput, false);
             val.invalid = true;
         } else {
@@ -385,17 +385,17 @@ function determineSearch() {
         if (!sectionValid) val.invalid = true;
         val.searchFunc = searchSection;
     } else if (!courseEmpty) {
-        if (deptEmpty || !deptKeyid) {
+        if (deptEmpty || !deptValid) {
             markInput(deptInput, false);
             val.invalid = true;
         } else {
             markInput(deptInput, true);
         }
-        markInput(courseInput, courseKeyid);
+        markInput(courseInput, courseValid);
         markInput(sectionInput, true);
-        if (!courseKeyid) val.invalid = true;
+        if (!courseValid) val.invalid = true;
         val.searchFunc = searchCourse;
-    } else if (deptEmpty || !deptKeyid) {
+    } else if (deptEmpty || !deptValid) {
         markInput(deptInput, false);
         val.invalid = true;
         markInput(courseInput, true);
