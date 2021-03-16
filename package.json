@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/setConfig && node src/index",
-    "dev": "nodemon index"
+    "dev": "nodemon index",
+    "server": "nodemon index"
   },
   "author": "Angus Ho",
   "license": "ISC",

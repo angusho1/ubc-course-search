@@ -23,6 +23,7 @@ window.addEventListener('click', (e) => {
 
 function loadMapsScript() {
     // Make Google Maps API Call
+    console.log(config);
     let maps_script = document.createElement('script');
     maps_script.setAttribute('src', `https://maps.googleapis.com/maps/api/js?key=${config.MAPS_KEY}`);
     maps_script.defer = true;
